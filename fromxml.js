@@ -9,21 +9,8 @@ var normalize={
 	"者":/"者"/g,
 	"即":/卽/g
 }
-
-var replaces=[
-	[/<wh>/g,"【"],
-	[/<\/wh>/g,"】"],
-	[/<說文字頭>/g,"【"],
-	[/<\/說文字頭>/g,"】"],
-	[/<段玉裁注>/g,"﹝"],
-	[/<\/段玉裁注>/g,"﹞"]
-
-]
-
-
 var processfile=function(fn) {
 	var content=fs.readFileSync(fn,'utf8');
-
 	content=content.replace(/\r\n/g,'\n');
 	content=content.replace(/卽/g,"即");
 	content=content.replace(/形/g,"形");
@@ -35,11 +22,9 @@ var processfile=function(fn) {
 	content=content.replace(/<wh>/g,"【")
 	content=content.replace(/<\/wh>/g,"】")
 
-	content=content.replace(/<說文字頭>/g,"【");
-	content=content.replace(/<\/說文字頭>/g,"】");
-	content=content.replace(/<段玉裁注>/g,"﹝");
-	content=content.replace(/<\/段玉裁注>/g,"﹞");
-	content=content.replace(/\n\n(【.+?】)\n/g,function(m,m1){
+	content=content.replace(/\n?<duanzhu>/g,"﹝");
+	content=content.replace(/<\/duanzhu>(\s*\n)+/g,"﹞");
+	content=content.replace(/\n(【.+?】)/g,function(m,m1){
 		return m1;
 	});
 
@@ -51,6 +36,9 @@ var processfile=function(fn) {
 
 	var sep=/\[(.*?)\]/g   // page break tag
 	content=content.replace(/<.*?>/g,'')
+	content=content.replace(/\n+【/g,'\n【')
+	content=content.replace(/】\n+/g,'】')		
+		
 	var doc=D.xml.importXML(content,{template:'accelon',sep:sep});
 	fn=fn.substring(fn.lastIndexOf('/'));
 	var filename=targetpath+fn.substring(7);
@@ -59,7 +47,7 @@ var processfile=function(fn) {
 	D.persistent.saveDocumentTags(doc,filename+'x');
 }
 
-var lst=fs.readFileSync(lstfile,'utf8').replace('\r\n','\n').split('\n');
+var lst=fs.readFileSync(lstfile,'utf8').replace(/\r\n/g,'\n').split('\n');
 var main=function() {
 	for (var i=0;i<lst.length;i++){
 		 processfile(sourcepath+lst[i]);
