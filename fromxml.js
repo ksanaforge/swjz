@@ -45,9 +45,9 @@ var processfile=function(fn) {
 
 
 	//remove punc
-	content=content.replace(/[『』〔〕「」。，、！《》〈〉；：]/g,'');
-	content=content.replace(/\[.*?\]/g,'');
-	content=content.replace(/<pb(.*?)>/g,function(m,m1){return '['+m1+']'});
+	content=content.replace(/[『』〔〕「」。，、！《》〈〉；：─]/g,'');
+	content=content.replace(/\[(.*?)\]/g,'');
+	content=content.replace(/<pb n="(.*?)"\/>/g,function(m,m1){return '['+m1+']'});
 
 	var sep=/\[(.*?)\]/g   // page break tag
 	content=content.replace(/<.*?>/g,'')
